@@ -7,6 +7,8 @@
 
 #include <esp_afe_sr_models.h>
 #include <esp_nsn_models.h>
+#include <esp_mn_iface.h>
+#include <esp_mn_models.h>
 
 #include <list>
 #include <string>
@@ -42,6 +44,18 @@ private:
     std::function<void(const std::string& wake_word)> wake_word_detected_callback_;
     AudioCodec* codec_ = nullptr;
     std::string last_detected_wake_word_;
+
+    // Multinet support
+    const esp_mn_iface_t* multinet_ = nullptr;
+    model_iface_data_t* multinet_model_data_ = nullptr;
+    const char* mn_name_ = nullptr;
+    bool use_multinet_ = false;
+    struct Command {
+        std::string command;
+        std::string text;
+        std::string action;
+    };
+    std::vector<Command> commands_;
 
     TaskHandle_t wake_word_encode_task_ = nullptr;
     StaticTask_t wake_word_encode_task_buffer_;

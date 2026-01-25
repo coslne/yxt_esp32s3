@@ -21,6 +21,11 @@
 
 #define TAG "MovecallCuicanESP32S3"
 
+class NoBacklight : public Backlight {
+protected:
+    void SetBrightnessImpl(uint8_t brightness) override {}
+};
+
 LV_FONT_DECLARE(font_puhui_16_4);
 LV_FONT_DECLARE(font_awesome_16_4);
 
@@ -108,11 +113,12 @@ private:
 public:
     MovecallCuicanESP32S3() : boot_button_(BOOT_BUTTON_GPIO) {  
         InitializeCodecI2c();
-        InitializeSpi();
-        InitializeGc9a01Display();
+        // InitializeSpi();
+        // InitializeGc9a01Display();
+        display_ = new NoDisplay();
         InitializeButtons();
         InitializeIot();
-        GetBacklight()->RestoreBrightness();
+        // GetBacklight()->RestoreBrightness();
     }
 
     virtual Led* GetLed() override {
@@ -125,7 +131,7 @@ public:
     }
     
     virtual Backlight* GetBacklight() override {
-        static PwmBacklight backlight(DISPLAY_BACKLIGHT_PIN, DISPLAY_BACKLIGHT_OUTPUT_INVERT);
+        static NoBacklight backlight;
         return &backlight;
     }
 

@@ -5,6 +5,7 @@
 #include <model_path.h>
 #include <arpa/inet.h>
 #include <sstream>
+#include <esp_mn_speech_commands.h>
 
 #define DETECTION_RUNNING_EVENT 1
 
@@ -35,6 +36,28 @@ void WakeWordDetect::Initialize(AudioCodec* codec) {
     int ref_num = codec_->input_reference() ? 1 : 0;
 
     srmodel_list_t *models = esp_srmodel_init("model");
+
+#ifdef CONFIG_USE_CUSTOM_WAKE_WORD
+    use_multinet_ = true;
+    mn_name_ = esp_srmodel_filter(models, ESP_MN_PREFIX, NULL);
+    if (mn_name_ != nullptr) {
+        multinet_ = esp_mn_handle_from_name(const_cast<char*>(mn_name_));
+        multinet_model_data_ = multinet_->create(const_cast<char*>(mn_name_), 6000);
+        float threshold = CONFIG_CUSTOM_WAKE_WORD_THRESHOLD / 100.0f;
+        multinet_->set_det_threshold(multinet_model_data_, threshold);
+
+        commands_.push_back({CONFIG_CUSTOM_WAKE_WORD, CONFIG_CUSTOM_WAKE_WORD_DISPLAY, "wake"});
+        esp_mn_commands_clear();
+        for (int i = 0; i < commands_.size(); i++) {
+            esp_mn_commands_add(i + 1, const_cast<char*>(commands_[i].command.c_str()));
+        }
+        esp_mn_commands_update();
+        multinet_->print_active_speech_commands(multinet_model_data_);
+    } else {
+        ESP_LOGE(TAG, "Multinet model not found!");
+    }
+#endif
+
     for (int i = 0; i < models->num; i++) {
         ESP_LOGI(TAG, "Model %d: %s", i, models->model_name[i]);
         if (strstr(models->model_name[i], ESP_WN_PREFIX) != NULL) {
@@ -62,8 +85,13 @@ void WakeWordDetect::Initialize(AudioCodec* codec) {
     afe_config->afe_perferred_core = 1;
     afe_config->afe_perferred_priority = 1;
     afe_config->memory_alloc_mode = AFE_MEMORY_ALLOC_MORE_PSRAM;
+
+#ifdef CONFIG_USE_CUSTOM_WAKE_WORD
+    afe_config->wakenet_init = false;
+    afe_config->wakenet_model_name = NULL;
+#endif
     
-    afe_iface_ = esp_afe_handle_from_config(afe_config);
+    afe_iface_ = const_cast<esp_afe_sr_iface_t*>(esp_afe_handle_from_config(afe_config));
     afe_data_ = afe_iface_->create_from_config(afe_config);
 
     xTaskCreate([](void* arg) {
@@ -123,7 +151,25 @@ void WakeWordDetect::AudioDetectionTask() {
         // Store the wake word data for voice recognition, like who is speaking
         StoreWakeWordData((uint16_t*)res->data, res->data_size / sizeof(uint16_t));
 
-        if (res->wakeup_state == WAKENET_DETECTED) {
+        if (use_multinet_ && multinet_model_data_) {
+            esp_mn_state_t mn_state = multinet_->detect(multinet_model_data_, (int16_t*)res->data);
+            if (mn_state == ESP_MN_STATE_DETECTED) {
+                 esp_mn_results_t *mn_result = multinet_->get_results(multinet_model_data_);
+                 for (int i = 0; i < mn_result->num; i++) {
+                    int id = mn_result->command_id[i] - 1;
+                    if (id >= 0 && id < commands_.size() && commands_[id].action == "wake") {
+                        ESP_LOGI(TAG, "Custom wake word detected: %s", commands_[id].text.c_str());
+                        StopDetection();
+                        last_detected_wake_word_ = commands_[id].text;
+
+                        if (wake_word_detected_callback_) {
+                            wake_word_detected_callback_(last_detected_wake_word_);
+                        }
+                    }
+                 }
+            }
+        } 
+        else if (res->wakeup_state == WAKENET_DETECTED) {
             StopDetection();
             last_detected_wake_word_ = wake_words_[res->wake_word_index - 1];
 
