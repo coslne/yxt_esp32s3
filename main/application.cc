@@ -27,8 +27,8 @@ static const char* const STATE_STRINGS[] = {
     "connecting",
     "listening",
     "speaking",
-    "upgrading",
-    "activating",
+    // "upgrading",
+    // "activating",
     "fatal_error",
     "invalid_state"
 };
@@ -62,143 +62,6 @@ Application::~Application() {
     vEventGroupDelete(event_group_);
 }
 
-void Application::CheckNewVersion() {
-    const int MAX_RETRY = 10;
-    int retry_count = 0;
-    int retry_delay = 10; // 初始重试延迟为10秒
-
-    while (true) {
-        SetDeviceState(kDeviceStateActivating);
-        auto display = Board::GetInstance().GetDisplay();
-        display->SetStatus(Lang::Strings::CHECKING_NEW_VERSION);
-
-        if (!ota_.CheckVersion()) {
-            retry_count++;
-            if (retry_count >= MAX_RETRY) {
-                ESP_LOGE(TAG, "Too many retries, exit version check");
-                return;
-            }
-            ESP_LOGW(TAG, "Check new version failed, retry in %d seconds (%d/%d)", retry_delay, retry_count, MAX_RETRY);
-            for (int i = 0; i < retry_delay; i++) {
-                vTaskDelay(pdMS_TO_TICKS(1000));
-                if (device_state_ == kDeviceStateIdle) {
-                    break;
-                }
-            }
-            retry_delay *= 2; // 每次重试后延迟时间翻倍
-            continue;
-        }
-        retry_count = 0;
-        retry_delay = 10; // 重置重试延迟时间
-
-        if (ota_.HasNewVersion()) {
-            Alert(Lang::Strings::OTA_UPGRADE, Lang::Strings::UPGRADING, "happy", Lang::Sounds::P3_UPGRADE);
-
-            vTaskDelay(pdMS_TO_TICKS(3000));
-
-            SetDeviceState(kDeviceStateUpgrading);
-            
-            display->SetIcon(FONT_AWESOME_DOWNLOAD);
-            std::string message = std::string(Lang::Strings::NEW_VERSION) + ota_.GetFirmwareVersion();
-            display->SetChatMessage("system", message.c_str());
-
-            auto& board = Board::GetInstance();
-            board.SetPowerSaveMode(false);
-#if CONFIG_USE_WAKE_WORD_DETECT
-            wake_word_detect_.StopDetection();
-#endif
-            // 预先关闭音频输出，避免升级过程有音频操作
-            auto codec = board.GetAudioCodec();
-            codec->EnableInput(false);
-            codec->EnableOutput(false);
-            {
-                std::lock_guard<std::mutex> lock(mutex_);
-                audio_decode_queue_.clear();
-            }
-            background_task_->WaitForCompletion();
-            delete background_task_;
-            background_task_ = nullptr;
-            vTaskDelay(pdMS_TO_TICKS(1000));
-
-            ota_.StartUpgrade([display](int progress, size_t speed) {
-                char buffer[64];
-                snprintf(buffer, sizeof(buffer), "%d%% %zuKB/s", progress, speed / 1024);
-                display->SetChatMessage("system", buffer);
-            });
-
-            // If upgrade success, the device will reboot and never reach here
-            display->SetStatus(Lang::Strings::UPGRADE_FAILED);
-            ESP_LOGI(TAG, "Firmware upgrade failed...");
-            vTaskDelay(pdMS_TO_TICKS(3000));
-            Reboot();
-            return;
-        }
-
-        // No new version, mark the current version as valid
-        ota_.MarkCurrentVersionValid();
-        if (!ota_.HasActivationCode() && !ota_.HasActivationChallenge()) {
-            xEventGroupSetBits(event_group_, CHECK_NEW_VERSION_DONE_EVENT);
-            // Exit the loop if done checking new version
-            break;
-        }
-
-        display->SetStatus(Lang::Strings::ACTIVATION);
-        // Activation code is shown to the user and waiting for the user to input
-        if (ota_.HasActivationCode()) {
-            ShowActivationCode();
-        }
-
-        // This will block the loop until the activation is done or timeout
-        for (int i = 0; i < 10; ++i) {
-            ESP_LOGI(TAG, "Activating... %d/%d", i + 1, 10);
-            esp_err_t err = ota_.Activate();
-            if (err == ESP_OK) {
-                xEventGroupSetBits(event_group_, CHECK_NEW_VERSION_DONE_EVENT);
-                break;
-            } else if (err == ESP_ERR_TIMEOUT) {
-                vTaskDelay(pdMS_TO_TICKS(3000));
-            } else {
-                vTaskDelay(pdMS_TO_TICKS(10000));
-            }
-            if (device_state_ == kDeviceStateIdle) {
-                break;
-            }
-        }
-    }
-}
-
-void Application::ShowActivationCode() {
-    auto& message = ota_.GetActivationMessage();
-    auto& code = ota_.GetActivationCode();
-
-    struct digit_sound {
-        char digit;
-        const std::string_view& sound;
-    };
-    static const std::array<digit_sound, 10> digit_sounds{{
-        digit_sound{'0', Lang::Sounds::P3_0},
-        digit_sound{'1', Lang::Sounds::P3_1}, 
-        digit_sound{'2', Lang::Sounds::P3_2},
-        digit_sound{'3', Lang::Sounds::P3_3},
-        digit_sound{'4', Lang::Sounds::P3_4},
-        digit_sound{'5', Lang::Sounds::P3_5},
-        digit_sound{'6', Lang::Sounds::P3_6},
-        digit_sound{'7', Lang::Sounds::P3_7},
-        digit_sound{'8', Lang::Sounds::P3_8},
-        digit_sound{'9', Lang::Sounds::P3_9}
-    }};
-
-    // This sentence uses 9KB of SRAM, so we need to wait for it to finish
-    Alert(Lang::Strings::ACTIVATION, message.c_str(), "happy", Lang::Sounds::P3_ACTIVATION);
-
-    for (const auto& digit : code) {
-        auto it = std::find_if(digit_sounds.begin(), digit_sounds.end(),
-            [digit](const digit_sound& ds) { return ds.digit == digit; });
-        if (it != digit_sounds.end()) {
-            PlaySound(it->sound);
-        }
-    }
-}
 
 void Application::Alert(const char* status, const char* message, const char* emotion, const std::string_view& sound) {
     ESP_LOGW(TAG, "Alert %s: %s [%s]", status, message, emotion);
@@ -251,11 +114,6 @@ void Application::PlaySound(const std::string_view& sound) {
 }
 
 void Application::ToggleChatState() {
-    if (device_state_ == kDeviceStateActivating) {
-        SetDeviceState(kDeviceStateIdle);
-        return;
-    }
-
     if (!protocol_) {
         ESP_LOGE(TAG, "Protocol not initialized");
         return;
@@ -282,11 +140,6 @@ void Application::ToggleChatState() {
 }
 
 void Application::StartListening() {
-    if (device_state_ == kDeviceStateActivating) {
-        SetDeviceState(kDeviceStateIdle);
-        return;
-    }
-
     if (!protocol_) {
         ESP_LOGE(TAG, "Protocol not initialized");
         return;
@@ -368,7 +221,6 @@ void Application::Start() {
     board.StartNetwork();
 
     // Check for new firmware version or get the MQTT broker address
-    CheckNewVersion();
 
     // Initialize the protocol
     display->SetStatus(Lang::Strings::LOADING_PROTOCOL);
@@ -545,8 +397,6 @@ void Application::Start() {
                 SetListeningMode(realtime_chat_enabled_ ? kListeningModeRealtime : kListeningModeAutoStop);
             } else if (device_state_ == kDeviceStateSpeaking) {
                 AbortSpeaking(kAbortReasonWakeWordDetected);
-            } else if (device_state_ == kDeviceStateActivating) {
-                SetDeviceState(kDeviceStateIdle);
             }
         });
     });
@@ -554,9 +404,8 @@ void Application::Start() {
 #endif
 
     // Wait for the new version check to finish
-    xEventGroupWaitBits(event_group_, CHECK_NEW_VERSION_DONE_EVENT, pdTRUE, pdFALSE, portMAX_DELAY);
     SetDeviceState(kDeviceStateIdle);
-    std::string message = std::string(Lang::Strings::VERSION) + ota_.GetCurrentVersion();
+    std::string message = std::string(Lang::Strings::VERSION) + "1.6.0";
     display->ShowNotification(message.c_str());
     display->SetChatMessage("system", "");
     // Play the success sound to indicate the device is ready
@@ -577,19 +426,6 @@ void Application::OnClockTimer() {
         int free_sram = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
         int min_free_sram = heap_caps_get_minimum_free_size(MALLOC_CAP_INTERNAL);
         ESP_LOGI(TAG, "Free internal: %u minimal internal: %u", free_sram, min_free_sram);
-
-        // If we have synchronized server time, set the status to clock "HH:MM" if the device is idle
-        if (ota_.HasServerTime()) {
-            if (device_state_ == kDeviceStateIdle) {
-                Schedule([this]() {
-                    // Set status to clock "HH:MM"
-                    time_t now = time(NULL);
-                    char time_str[64];
-                    strftime(time_str, sizeof(time_str), "%H:%M  ", localtime(&now));
-                    Board::GetInstance().GetDisplay()->SetStatus(time_str);
-                });
-            }
-        }
     }
 }
 

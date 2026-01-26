@@ -5,9 +5,10 @@
 #include "assets/lang_config.h"
 
 #include <esp_log.h>
-#include <esp_ota_ops.h>
 #include <esp_chip_info.h>
 #include <esp_random.h>
+#include <esp_app_desc.h>
+#include <esp_partition.h>
 
 #define TAG "Board"
 
@@ -145,11 +146,6 @@ std::string Board::GetJson() {
     }
     json.pop_back(); // Remove the last comma
     json += "],";
-
-    json += "\"ota\":{";
-    auto ota_partition = esp_ota_get_running_partition();
-    json += "\"label\":\"" + std::string(ota_partition->label) + "\"";
-    json += "},";
 
     json += "\"board\":" + GetBoardJson();
 

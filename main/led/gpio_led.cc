@@ -232,14 +232,6 @@ void GpioLed::OnStateChanged() {
             SetBrightness(SPEAKING_BRIGHTNESS);
             TurnOn();
             break;
-        case kDeviceStateUpgrading:
-            SetBrightness(UPGRADING_BRIGHTNESS);
-            StartContinuousBlink(100);
-            break;
-        case kDeviceStateActivating:
-            SetBrightness(ACTIVATING_BRIGHTNESS);
-            StartContinuousBlink(500);
-            break;
         default:
             ESP_LOGE(TAG, "Unknown gpio led event: %d", device_state);
             return;
