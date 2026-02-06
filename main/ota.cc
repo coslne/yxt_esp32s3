@@ -44,7 +44,7 @@ std::string Ota::GetCheckVersionUrl() {
     Settings settings("wifi", false);
     std::string url = settings.GetString("ota_url");
     if (url.empty()) {
-        url = CONFIG_OTA_URL;
+        url = CONFIG_OTA_VERSION_URL;
     }
     return url;
 }
@@ -64,7 +64,7 @@ std::unique_ptr<Http> Ota::SetupHttp() {
     http->SetHeader("Accept-Language", Lang::CODE);
     http->SetHeader("Content-Type", "application/json");
 
-    return http;
+    return std::unique_ptr<Http>(http);
 }
 
 /* 
@@ -88,21 +88,19 @@ esp_err_t Ota::CheckVersion() {
 
     std::string data = board.GetJson();
     std::string method = data.length() > 0 ? "POST" : "GET";
-    http->SetContent(std::move(data));
 
-    if (!http->Open(method, url)) {
-        int last_error = http->GetLastError();
-        ESP_LOGE(TAG, "Failed to open HTTP connection, code=0x%x", last_error);
-        return last_error;
+    if (!http->Open(method, url, data)) {
+        ESP_LOGE(TAG, "Failed to open HTTP connection");
+        return ESP_FAIL;
     }
 
     auto status_code = http->GetStatusCode();
     if (status_code != 200) {
-        ESP_LOGE(TAG, "Failed to check version, status code: %d", status_code);
-        return status_code;
+        ESP_LOGE(TAG, "Failed to check version, status_code=%d", status_code);
+        return ESP_FAIL;
     }
 
-    data = http->ReadAll();
+    data = http->GetBody();
     http->Close();
 
     // Response: { "firmware": { "version": "1.0.0", "url": "http://" } }
@@ -450,9 +448,8 @@ esp_err_t Ota::Activate() {
     auto http = SetupHttp();
 
     std::string data = GetActivationPayload();
-    http->SetContent(std::move(data));
 
-    if (!http->Open("POST", url)) {
+    if (!http->Open("POST", url, data)) {
         ESP_LOGE(TAG, "Failed to open HTTP connection");
         return ESP_FAIL;
     }
@@ -462,7 +459,7 @@ esp_err_t Ota::Activate() {
         return ESP_ERR_TIMEOUT;
     }
     if (status_code != 200) {
-        ESP_LOGE(TAG, "Failed to activate, code: %d, body: %s", status_code, http->ReadAll().c_str());
+        ESP_LOGE(TAG, "Failed to activate, code: %d, body: %s", status_code, http->GetBody().c_str());
         return ESP_FAIL;
     }
 

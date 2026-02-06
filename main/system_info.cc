@@ -40,6 +40,11 @@ std::string SystemInfo::GetChipModelName() {
     return std::string(CONFIG_IDF_TARGET);
 }
 
+std::string SystemInfo::GetUserAgent() {
+    const esp_app_desc_t *app_desc = esp_app_get_description();
+    return std::string("Xiaozhi/") + app_desc->version + " (" + CONFIG_IDF_TARGET + ")";
+}
+
 esp_err_t SystemInfo::PrintRealTimeStats(TickType_t xTicksToWait) {
     #define ARRAY_SIZE_OFFSET 5
     TaskStatus_t *start_array = NULL, *end_array = NULL;

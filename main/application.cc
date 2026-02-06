@@ -810,7 +810,7 @@ bool Application::UpgradeFirmware(const std::string& url, const std::string& ver
     }
     ESP_LOGI(TAG, "Starting firmware upgrade from URL: %s", upgrade_url.c_str());
 
-    Alert(Lang::Strings::OTA_UPGRADE, Lang::Strings::UPGRADING, "download", Lang::Sounds::OGG_UPGRADE);
+    Alert(Lang::Strings::OTA_UPGRADE, Lang::Strings::UPGRADING, "download", Lang::Sounds::P3_UPGRADE);
     
     SetDeviceState(kDeviceStateUpgrading);
 
@@ -837,7 +837,7 @@ bool Application::UpgradeFirmware(const std::string& url, const std::string& ver
 
     if (!upgrade_success) {
         ESP_LOGE(TAG, "Firmware upgrade failed");
-        Alert(Lang::Strings::ERROR, Lang::Strings::UPGRADE_FAILED, "circle_xmark", Lang::Sounds::OGG_EXCLAMATION);
+        Alert(Lang::Strings::ERROR, Lang::Strings::UPGRADE_FAILED, "circle_xmark", Lang::Sounds::P3_EXCLAMATION);
         vTaskDelay(pdMS_TO_TICKS(3000));
         SetDeviceState(kDeviceStateIdle); 
         return false;
@@ -856,19 +856,19 @@ void Application::ShowActivationCode(const std::string& code, const std::string&
         const std::string_view& sound;
     };
     static const std::array<digit_sound, 10> digit_sounds{{
-        digit_sound{'0', Lang::Sounds::OGG_0},
-        digit_sound{'1', Lang::Sounds::OGG_1}, 
-        digit_sound{'2', Lang::Sounds::OGG_2},
-        digit_sound{'3', Lang::Sounds::OGG_3},
-        digit_sound{'4', Lang::Sounds::OGG_4},
-        digit_sound{'5', Lang::Sounds::OGG_5},
-        digit_sound{'6', Lang::Sounds::OGG_6},
-        digit_sound{'7', Lang::Sounds::OGG_7},
-        digit_sound{'8', Lang::Sounds::OGG_8},
-        digit_sound{'9', Lang::Sounds::OGG_9}
+        digit_sound{'0', Lang::Sounds::P3_0},
+        digit_sound{'1', Lang::Sounds::P3_1}, 
+        digit_sound{'2', Lang::Sounds::P3_2},
+        digit_sound{'3', Lang::Sounds::P3_3},
+        digit_sound{'4', Lang::Sounds::P3_4},
+        digit_sound{'5', Lang::Sounds::P3_5},
+        digit_sound{'6', Lang::Sounds::P3_6},
+        digit_sound{'7', Lang::Sounds::P3_7},
+        digit_sound{'8', Lang::Sounds::P3_8},
+        digit_sound{'9', Lang::Sounds::P3_9}
     }};
 
-    Alert(Lang::Strings::ACTIVATION, message.c_str(), "link", Lang::Sounds::OGG_ACTIVATION);
+    Alert(Lang::Strings::ACTIVATION, message.c_str(), "link", Lang::Sounds::P3_ACTIVATION);
 
     for (const auto& digit : code) {
         auto it = std::find_if(digit_sounds.begin(), digit_sounds.end(),
