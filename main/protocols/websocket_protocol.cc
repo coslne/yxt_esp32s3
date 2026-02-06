@@ -29,7 +29,7 @@ void WebsocketProtocol::SendAudio(const std::vector<uint8_t>& data) {
     if (websocket_ == nullptr) {
         return;
     }
-
+    ESP_LOGI("WS", "Sent audio bytes: %d", data.size()); 
     busy_sending_audio_ = true;
     websocket_->Send(data.data(), data.size(), true);
     busy_sending_audio_ = false;

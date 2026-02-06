@@ -89,6 +89,10 @@ esp_err_t Ota::CheckVersion() {
     std::string data = board.GetJson();
     std::string method = data.length() > 0 ? "POST" : "GET";
 
+    if (data.length() > 0) {
+        ESP_LOGI(TAG, "Request payload: %s", data.c_str());
+    }
+
     if (!http->Open(method, url, data)) {
         ESP_LOGE(TAG, "Failed to open HTTP connection");
         return ESP_FAIL;
