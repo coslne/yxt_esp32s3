@@ -17,7 +17,7 @@
 #include <opus_resampler.h>
 
 #include "protocol.h"
-// #include "ota.h"
+#include "ota.h"
 #include "background_task.h"
 
 #if CONFIG_USE_WAKE_WORD_DETECT
@@ -30,7 +30,7 @@
 #define SCHEDULE_EVENT (1 << 0)
 #define AUDIO_INPUT_READY_EVENT (1 << 1)
 #define AUDIO_OUTPUT_READY_EVENT (1 << 2)
-// #define CHECK_NEW_VERSION_DONE_EVENT (1 << 3)
+#define CHECK_NEW_VERSION_DONE_EVENT (1 << 3)
 
 enum DeviceState {
     kDeviceStateUnknown,
@@ -40,8 +40,8 @@ enum DeviceState {
     kDeviceStateConnecting,
     kDeviceStateListening,
     kDeviceStateSpeaking,
-    // kDeviceStateUpgrading,
-    // kDeviceStateActivating,
+    kDeviceStateUpgrading,
+    kDeviceStateActivating,
     kDeviceStateFatalError
 };
 
@@ -73,6 +73,8 @@ public:
     void WakeWordInvoke(const std::string& wake_word);
     void PlaySound(const std::string_view& sound);
     bool CanEnterSleepMode();
+    bool UpgradeFirmware(const std::string& url, const std::string& version = "");
+    void ShowActivationCode(const std::string& code, const std::string& message);
 
 private:
     Application();
@@ -84,7 +86,7 @@ private:
 #if CONFIG_USE_AUDIO_PROCESSOR
     AudioProcessor audio_processor_;
 #endif
-    // Ota ota_;
+    std::unique_ptr<Ota> ota_;
     std::mutex mutex_;
     std::list<std::function<void()>> main_tasks_;
     std::unique_ptr<Protocol> protocol_;

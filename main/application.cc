@@ -27,8 +27,8 @@ static const char* const STATE_STRINGS[] = {
     "connecting",
     "listening",
     "speaking",
-    // "upgrading",
-    // "activating",
+    "upgrading",
+    "activating",
     "fatal_error",
     "invalid_state"
 };
@@ -220,15 +220,48 @@ void Application::Start() {
     /* Wait for the network to be ready */
     board.StartNetwork();
 
-    // Check for new firmware version or get the MQTT broker address
+    ota_ = std::make_unique<Ota>();
+    
+    // Check for new firmware version
+    display->SetStatus(Lang::Strings::CHECKING_NEW_VERSION);
+    for (int i = 0; i < 10; ++i) {
+        if (ota_->CheckVersion() == ESP_OK) {
+            break;
+        }
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+
+    if (ota_->HasNewVersion()) {
+        UpgradeFirmware(ota_->GetFirmwareUrl(), ota_->GetFirmwareVersion());
+    }
+    
+    ota_->MarkCurrentVersionValid();
+
+    // Activation
+    while (ota_->HasActivationCode() || ota_->HasActivationChallenge()) {
+        display->SetStatus(Lang::Strings::ACTIVATION);
+        if (ota_->HasActivationCode()) {
+            ShowActivationCode(ota_->GetActivationCode(), ota_->GetActivationMessage());
+        }
+        if (ota_->Activate() == ESP_OK) {
+            break;
+        }
+        vTaskDelay(pdMS_TO_TICKS(3000));
+    }
 
     // Initialize the protocol
     display->SetStatus(Lang::Strings::LOADING_PROTOCOL);
+    if (ota_->HasWebsocketConfig()) {
+        protocol_ = std::make_unique<WebsocketProtocol>();
+    } else if (ota_->HasMqttConfig()) {
+        protocol_ = std::make_unique<MqttProtocol>();
+    } else {
 #ifdef CONFIG_CONNECTION_TYPE_WEBSOCKET
-    protocol_ = std::make_unique<WebsocketProtocol>();
+        protocol_ = std::make_unique<WebsocketProtocol>();
 #else
-    protocol_ = std::make_unique<MqttProtocol>();
+        protocol_ = std::make_unique<MqttProtocol>();
 #endif
+    }
     protocol_->OnNetworkError([this](const std::string& message) {
         SetDeviceState(kDeviceStateIdle);
         Alert(Lang::Strings::ERROR, message.c_str(), "sad", Lang::Sounds::P3_EXCLAMATION);
@@ -405,7 +438,7 @@ void Application::Start() {
 
     // Wait for the new version check to finish
     SetDeviceState(kDeviceStateIdle);
-    std::string message = std::string(Lang::Strings::VERSION) + "1.6.0";
+    std::string message = std::string(Lang::Strings::VERSION) + ota_->GetCurrentVersion();
     display->ShowNotification(message.c_str());
     display->SetChatMessage("system", "");
     // Play the success sound to indicate the device is ready
@@ -762,4 +795,86 @@ bool Application::CanEnterSleepMode() {
 
     // Now it is safe to enter sleep mode
     return true;
+}
+
+bool Application::UpgradeFirmware(const std::string& url, const std::string& version) {
+    auto& board = Board::GetInstance();
+    auto display = board.GetDisplay();
+
+    std::string upgrade_url = url;
+    std::string version_info = version.empty() ? "(Manual upgrade)" : version;
+
+    if (protocol_ && protocol_->IsAudioChannelOpened()) {
+        ESP_LOGI(TAG, "Closing audio channel before firmware upgrade");
+        protocol_->CloseAudioChannel();
+    }
+    ESP_LOGI(TAG, "Starting firmware upgrade from URL: %s", upgrade_url.c_str());
+
+    Alert(Lang::Strings::OTA_UPGRADE, Lang::Strings::UPGRADING, "download", Lang::Sounds::OGG_UPGRADE);
+    
+    SetDeviceState(kDeviceStateUpgrading);
+
+    std::string message = std::string(Lang::Strings::NEW_VERSION) + version_info;
+    display->SetChatMessage("system", message.c_str());
+
+    if (audio_loop_task_handle_) {
+        vTaskSuspend(audio_loop_task_handle_);
+    }
+
+    vTaskDelay(pdMS_TO_TICKS(1000));
+
+    bool upgrade_success = Ota::Upgrade(upgrade_url, [display](int progress, size_t speed) {
+        char buffer[64];
+        snprintf(buffer, sizeof(buffer), "%d%% %uKB/s", progress, speed / 1024);
+        Application::GetInstance().Schedule([display, buffer_str = std::string(buffer)]() {
+             display->SetChatMessage("system", buffer_str.c_str());
+        });
+    });
+
+    if (audio_loop_task_handle_) {
+        vTaskResume(audio_loop_task_handle_);
+    }
+
+    if (!upgrade_success) {
+        ESP_LOGE(TAG, "Firmware upgrade failed");
+        Alert(Lang::Strings::ERROR, Lang::Strings::UPGRADE_FAILED, "circle_xmark", Lang::Sounds::OGG_EXCLAMATION);
+        vTaskDelay(pdMS_TO_TICKS(3000));
+        SetDeviceState(kDeviceStateIdle); 
+        return false;
+    } else {
+        ESP_LOGI(TAG, "Firmware upgrade successful, rebooting...");
+        display->SetChatMessage("system", "Upgrade successful, rebooting...");
+        vTaskDelay(pdMS_TO_TICKS(1000));
+        Reboot();
+        return true;
+    }
+}
+
+void Application::ShowActivationCode(const std::string& code, const std::string& message) {
+    struct digit_sound {
+        char digit;
+        const std::string_view& sound;
+    };
+    static const std::array<digit_sound, 10> digit_sounds{{
+        digit_sound{'0', Lang::Sounds::OGG_0},
+        digit_sound{'1', Lang::Sounds::OGG_1}, 
+        digit_sound{'2', Lang::Sounds::OGG_2},
+        digit_sound{'3', Lang::Sounds::OGG_3},
+        digit_sound{'4', Lang::Sounds::OGG_4},
+        digit_sound{'5', Lang::Sounds::OGG_5},
+        digit_sound{'6', Lang::Sounds::OGG_6},
+        digit_sound{'7', Lang::Sounds::OGG_7},
+        digit_sound{'8', Lang::Sounds::OGG_8},
+        digit_sound{'9', Lang::Sounds::OGG_9}
+    }};
+
+    Alert(Lang::Strings::ACTIVATION, message.c_str(), "link", Lang::Sounds::OGG_ACTIVATION);
+
+    for (const auto& digit : code) {
+        auto it = std::find_if(digit_sounds.begin(), digit_sounds.end(),
+            [digit](const digit_sound& ds) { return ds.digit == digit; });
+        if (it != digit_sounds.end()) {
+            PlaySound(it->sound);
+        }
+    }
 }

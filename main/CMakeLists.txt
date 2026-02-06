@@ -16,6 +16,7 @@ set(SOURCES "audio_codecs/audio_codec.cc"
             "application.cc"
             "settings.cc"
             "background_task.cc"
+            "ota.cc"
             "main.cc"
             )
 
