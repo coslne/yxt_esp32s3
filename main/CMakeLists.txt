@@ -43,11 +43,7 @@ file(GLOB BOARD_SOURCES
 )
 list(APPEND SOURCES ${BOARD_SOURCES})
 
-if(CONFIG_CONNECTION_TYPE_MQTT_UDP)
-    list(APPEND SOURCES "protocols/mqtt_protocol.cc")
-elseif(CONFIG_CONNECTION_TYPE_WEBSOCKET)
-    list(APPEND SOURCES "protocols/websocket_protocol.cc")
-endif()
+list(APPEND SOURCES "protocols/mqtt_protocol.cc" "protocols/websocket_protocol.cc")
 
 if(CONFIG_USE_AUDIO_PROCESSOR)
     list(APPEND SOURCES "audio_processing/audio_processor.cc")
