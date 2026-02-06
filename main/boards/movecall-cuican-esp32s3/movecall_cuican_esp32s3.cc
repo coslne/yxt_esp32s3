@@ -7,7 +7,7 @@
 #include "iot/thing_manager.h"
 #include "led/single_led.h"
 
-#include <wifi_station.h>
+#include <wifi_manager.h>
 #include <esp_log.h>
 #include <esp_efuse_table.h>
 #include <driver/i2c_master.h>
@@ -96,7 +96,7 @@ private:
     void InitializeButtons() {
         boot_button_.OnClick([this]() {
             auto& app = Application::GetInstance();
-            if (app.GetDeviceState() == kDeviceStateStarting && !WifiStation::GetInstance().IsConnected()) {
+            if (app.GetDeviceState() == kDeviceStateStarting && !WifiManager::GetInstance().IsConnected()) {
                 ResetWifiConfiguration();
             }
             app.ToggleChatState();
