@@ -60,6 +60,7 @@ bool MqttProtocol::StartMqttClient(bool report_error) {
     });
 
     mqtt_->OnMessage([this](const std::string& topic, const std::string& payload) {
+        ESP_LOGI(TAG, "Received MQTT message, topic: %s, payload: %s", topic.c_str(), payload.c_str());
         cJSON* root = cJSON_Parse(payload.c_str());
         if (root == nullptr) {
             ESP_LOGE(TAG, "Failed to parse json message %s", payload.c_str());
@@ -202,6 +203,7 @@ bool MqttProtocol::OpenAudioChannel() {
             ESP_LOGE(TAG, "Invalid audio packet size: %zu", data.size());
             return;
         }
+        ESP_LOGI(TAG, "Received UDP audio packet, size: %zu", data.size());
         if (data[0] != 0x01) {
             ESP_LOGE(TAG, "Invalid audio packet type: %x", data[0]);
             return;
@@ -267,6 +269,7 @@ void MqttProtocol::ParseServerHello(const cJSON* root) {
             server_frame_duration_ = frame_duration->valueint;
         }
     }
+    ESP_LOGI(TAG, "Server audio params: sample_rate=%d, frame_duration=%d", server_sample_rate_, server_frame_duration_);
 
     auto udp = cJSON_GetObjectItem(root, "udp");
     if (udp == nullptr) {

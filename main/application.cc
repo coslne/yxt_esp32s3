@@ -15,6 +15,8 @@
 #include <cJSON.h>
 #include <driver/gpio.h>
 #include <arpa/inet.h>
+#include <time.h>
+#include <sys/time.h>
 
 #define TAG "Application"
 
@@ -455,6 +457,20 @@ void Application::OnClockTimer() {
     // Print the debug info every 10 seconds
     if (clock_ticks_ % 10 == 0) {
         // SystemInfo::PrintRealTimeStats(pdMS_TO_TICKS(1000));
+        
+        // Print current stats and time
+        time_t now;
+        char strftime_buf[64];
+        struct tm timeinfo;
+        time(&now);
+        localtime_r(&now, &timeinfo);
+        if (timeinfo.tm_year > (2020 - 1900)) {
+            strftime(strftime_buf, sizeof(strftime_buf), "%Y-%m-%d %H:%M:%S", &timeinfo);
+            // Get milliseconds
+            struct timeval tv;
+            gettimeofday(&tv, NULL);
+            ESP_LOGI(TAG, "Current Time: %s.%03ld", strftime_buf, tv.tv_usec / 1000);
+        }
 
         int free_sram = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
         int min_free_sram = heap_caps_get_minimum_free_size(MALLOC_CAP_INTERNAL);

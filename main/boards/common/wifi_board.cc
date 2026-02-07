@@ -19,6 +19,8 @@
 
 #include <wifi_manager.h>
 #include <ssid_manager.h>
+#include <esp_sntp.h>
+#include <time.h>
 
 static const char *TAG = "WifiBoard";
 
@@ -130,6 +132,16 @@ void WifiBoard::StartNetwork() {
         EnterWifiConfigMode();
         return;
     }
+
+    // Initialize SNTP
+    esp_sntp_setoperatingmode(SNTP_OPMODE_POLL);
+    esp_sntp_setservername(0, "pool.ntp.org");
+    esp_sntp_setservername(1, "ntp.aliyun.com");
+    esp_sntp_init();
+
+    // Set timezone to China Standard Time
+    setenv("TZ", "CST-8", 1);
+    tzset();
 }
 
 Http* WifiBoard::CreateHttp() {

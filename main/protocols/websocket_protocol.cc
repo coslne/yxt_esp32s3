@@ -67,6 +67,7 @@ bool WebsocketProtocol::OpenAudioChannel() {
 
     busy_sending_audio_ = false;
     error_occurred_ = false;
+    session_id_ = "";
     std::string url = CONFIG_WEBSOCKET_URL;
     std::string token = "Bearer " + std::string(CONFIG_WEBSOCKET_ACCESS_TOKEN);
     websocket_ = Board::GetInstance().CreateWebSocket();
@@ -77,10 +78,12 @@ bool WebsocketProtocol::OpenAudioChannel() {
 
     websocket_->OnData([this](const char* data, size_t len, bool binary) {
         if (binary) {
+            ESP_LOGI(TAG, "Received audio binary, length: %zu", len);
             if (on_incoming_audio_ != nullptr) {
                 on_incoming_audio_(std::vector<uint8_t>((uint8_t*)data, (uint8_t*)data + len));
             }
         } else {
+            ESP_LOGI(TAG, "Received JSON: %.*s", (int)len, data);
             // Parse JSON data
             auto root = cJSON_Parse(data);
             auto type = cJSON_GetObjectItem(root, "type");
@@ -148,6 +151,12 @@ void WebsocketProtocol::ParseServerHello(const cJSON* root) {
         return;
     }
 
+    auto session_id = cJSON_GetObjectItem(root, "session_id");
+    if (session_id != nullptr) {
+        session_id_ = session_id->valuestring;
+        ESP_LOGI(TAG, "Session ID: %s", session_id_.c_str());
+    }
+
     auto audio_params = cJSON_GetObjectItem(root, "audio_params");
     if (audio_params != NULL) {
         auto sample_rate = cJSON_GetObjectItem(audio_params, "sample_rate");
@@ -159,6 +168,7 @@ void WebsocketProtocol::ParseServerHello(const cJSON* root) {
             server_frame_duration_ = frame_duration->valueint;
         }
     }
+    ESP_LOGI(TAG, "Server audio params: sample_rate=%d, frame_duration=%d", server_sample_rate_, server_frame_duration_);
 
     xEventGroupSetBits(event_group_handle_, WEBSOCKET_PROTOCOL_SERVER_HELLO_EVENT);
 }
