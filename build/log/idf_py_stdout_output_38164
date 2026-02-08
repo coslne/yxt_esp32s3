@@ -1,0 +1,53 @@
+Command: ninja all
+[1/9] Performing build step for 'bootloader'
+[1/1] C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\gs75\Desktop\xiaozhi_new\yxt_code\build\bootloader\esp-idf\esptool_py && C:\Espressif\python_env\idf5.5_py3.11_env\Scripts\python.exe C:/Espressif/frameworks/esp-idf-v5.5.2/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 C:/Users/gs75/Desktop/xiaozhi_new/yxt_code/build/bootloader/bootloader.bin"
+Bootloader binary size 0x4050 bytes. 0x3fb0 bytes (50%) free.
+[2/9] No install step for 'bootloader'
+[3/9] Completed 'bootloader'
+[4/9] Building CXX object esp-idf/78__esp-wifi-connect/CMakeFiles/__idf_78__esp-wifi-connect.dir/wifi_station.cc.obj
+In file included from C:/Users/gs75/Desktop/xiaozhi_new/yxt_code/managed_components/78__esp-wifi-connect/wifi_station.cc:13:
+C:/Espressif/frameworks/esp-idf-v5.5.2/components/wpa_supplicant/esp_supplicant/include/esp_wpa2.h:10:74: note: '#pragma message: esp_wpa2.h is deprecated. Use esp_eap_client.h instead.'
+   10 | #pragma message("esp_wpa2.h is deprecated. Use esp_eap_client.h instead.")
+      |                                                                          ^
+C:/Users/gs75/Desktop/xiaozhi_new/yxt_code/managed_components/78__esp-wifi-connect/wifi_station.cc: In member function 'void WifiStation::StartConnect()':
+C:/Users/gs75/Desktop/xiaozhi_new/yxt_code/managed_components/78__esp-wifi-connect/wifi_station.cc:239:43: warning: 'esp_err_t esp_wifi_sta_wpa2_ent_set_identity(const unsigned char*, int)' is deprecated: Use 'esp_eap_client_set_identity' instead [-Wdeprecated-declarations]
+  239 |         esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)ap_record.username.c_str(), ap_record.username.length());
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:/Espressif/frameworks/esp-idf-v5.5.2/components/wpa_supplicant/esp_supplicant/include/esp_wpa2.h:65:11: note: declared here
+   65 | esp_err_t esp_wifi_sta_wpa2_ent_set_identity(const unsigned char *identity, int len);
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:/Users/gs75/Desktop/xiaozhi_new/yxt_code/managed_components/78__esp-wifi-connect/wifi_station.cc:240:43: warning: 'esp_err_t esp_wifi_sta_wpa2_ent_set_username(const unsigned char*, int)' is deprecated: Use 'esp_eap_client_set_username' instead [-Wdeprecated-declarations]
+  240 |         esp_wifi_sta_wpa2_ent_set_username((uint8_t *)ap_record.username.c_str(), ap_record.username.length());
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:/Espressif/frameworks/esp-idf-v5.5.2/components/wpa_supplicant/esp_supplicant/include/esp_wpa2.h:92:11: note: declared here
+   92 | esp_err_t esp_wifi_sta_wpa2_ent_set_username(const unsigned char *username, int len);
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:/Users/gs75/Desktop/xiaozhi_new/yxt_code/managed_components/78__esp-wifi-connect/wifi_station.cc:241:43: warning: 'esp_err_t esp_wifi_sta_wpa2_ent_set_password(const unsigned char*, int)' is deprecated: Use 'esp_eap_client_set_password' instead [-Wdeprecated-declarations]
+  241 |         esp_wifi_sta_wpa2_ent_set_password((uint8_t *)ap_record.password.c_str(), ap_record.password.length());
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:/Espressif/frameworks/esp-idf-v5.5.2/components/wpa_supplicant/esp_supplicant/include/esp_wpa2.h:118:11: note: declared here
+  118 | esp_err_t esp_wifi_sta_wpa2_ent_set_password(const unsigned char *password, int len);
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:/Users/gs75/Desktop/xiaozhi_new/yxt_code/managed_components/78__esp-wifi-connect/wifi_station.cc:242:37: warning: 'esp_err_t esp_wifi_sta_wpa2_ent_enable()' is deprecated: Use 'esp_wifi_sta_enterprise_enable' instead [-Wdeprecated-declarations]
+  242 |         esp_wifi_sta_wpa2_ent_enable();
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+C:/Espressif/frameworks/esp-idf-v5.5.2/components/wpa_supplicant/esp_supplicant/include/esp_wpa2.h:31:11: note: declared here
+   31 | esp_err_t esp_wifi_sta_wpa2_ent_enable(void);
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:/Users/gs75/Desktop/xiaozhi_new/yxt_code/managed_components/78__esp-wifi-connect/wifi_station.cc:244:38: warning: 'esp_err_t esp_wifi_sta_wpa2_ent_disable()' is deprecated: Use 'esp_wifi_sta_enterprise_disable' instead [-Wdeprecated-declarations]
+  244 |         esp_wifi_sta_wpa2_ent_disable();
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+C:/Espressif/frameworks/esp-idf-v5.5.2/components/wpa_supplicant/esp_supplicant/include/esp_wpa2.h:46:11: note: declared here
+   46 | esp_err_t esp_wifi_sta_wpa2_ent_disable(void);
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[5/9] Linking C static library esp-idf\78__esp-wifi-connect\lib78__esp-wifi-connect.a
+[6/9] Generating esp-idf/esp_system/ld/sections.ld
+[7/9] Linking CXX executable xiaozhi.elf
+[8/9] Generating binary image from built executable
+esptool.py v4.11.dev1
+Creating esp32s3 image...
+Merged 2 ELF sections
+Successfully created esp32s3 image.
+Generated C:/Users/gs75/Desktop/xiaozhi_new/yxt_code/build/xiaozhi.bin
+[9/9] C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\gs75\Desktop\xiaozhi_new\yxt_code\build\esp-idf\esptool_py && C:\Espressif\python_env\idf5.5_py3.11_env\Scripts\python.exe C:/Espressif/frameworks/esp-idf-v5.5.2/components/partition_table/check_sizes.py --offset 0x8000 partition --type app C:/Users/gs75/Desktop/xiaozhi_new/yxt_code/build/partition_table/partition-table.bin C:/Users/gs75/Desktop/xiaozhi_new/yxt_code/build/xiaozhi.bin"
+xiaozhi.bin binary size 0x2b3430 bytes. Smallest app partition is 0xc00000 bytes. 0x94cbd0 bytes (77%) free.

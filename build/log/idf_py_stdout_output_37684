@@ -1,0 +1,211 @@
+Command: C:\Espressif\python_env\idf5.5_py3.11_env\Scripts\python.exe C:\Espressif\frameworks\esp-idf-v5.5.2\tools/idf_monitor.py -p COM6 -b 115200 --toolchain-prefix xtensa-esp32s3-elf- --target esp32s3 --revision 0 C:\Users\gs75\Desktop\xiaozhi_new\yxt_code\build\xiaozhi.elf C:\Users\gs75\Desktop\xiaozhi_new\yxt_code\build\bootloader\bootloader.elf --force-color -m 'C:\Espressif\python_env\idf5.5_py3.11_env\Scripts\python.exe' 'C:\Espressif\frameworks\esp-idf-v5.5.2\tools\idf.py'
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x28 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037ff9e
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x548
+load:0x403c8700,len:0xc3c
+load:0x403cb700,len:0x2e70
+entry 0x403c8908
+[0;32mI (34) octal_psram: vendor id    : 0x0d (AP)[0m
+[0;32mI (34) octal_psram: dev id       : 0x02 (generation 3)[0m
+[0;32mI (34) octal_psram: density      : 0x03 (64 Mbit)[0m
+[0;32mI (36) octal_psram: good-die     : 0x01 (Pass)[0m
+[0;32mI (40) octal_psram: Latency      : 0x01 (Fixed)[0m
+[0;32mI (44) octal_psram: VCC          : 0x01 (3V)[0m
+[0;32mI (48) octal_psram: SRF          : 0x01 (Fast Refresh)[0m
+[0;32mI (53) octal_psram: BurstType    : 0x01 (Hybrid Wrap)[0m
+[0;32mI (58) octal_psram: BurstLen     : 0x01 (32 Byte)[0m
+[0;32mI (62) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)[0m
+[0;32mI (67) octal_psram: DriveStrength: 0x00 (1/1)[0m
+[0;32mI (72) MSPI Timing: Enter psram timing tuning[0m
+[0;32mI (76) esp_psram: Found 8MB PSRAM device[0m
+[0;32mI (79) esp_psram: Speed: 80MHz[0m
+[0;32mI (82) cpu_start: Multicore app[0m
+[0;32mI (96) cpu_start: GPIO 44 and 43 are used as console UART I/O pins[0m
+[0;32mI (97) cpu_start: Pro cpu start user code[0m
+[0;32mI (97) cpu_start: cpu freq: 240000000 Hz[0m
+[0;32mI (98) app_init: Application information:[0m
+[0;32mI (102) app_init: Project name:     xiaozhi[0m
+[0;32mI (106) app_init: App version:      1.6.0[0m
+[0;32mI (110) app_init: Compile time:     Feb  8 2026 17:03:14[0m
+[0;32mI (115) app_init: ELF file SHA256:  0b4cd01fb...[0m
+[0;32mI (119) app_init: ESP-IDF:          v5.5.2[0m
+[0;32mI (123) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (127) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (131) efuse_init: Chip rev:         v0.2[0m
+[0;32mI (135) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (141) heap_init: At 3FCAD340 len 0003C3D0 (240 KiB): RAM[0m
+[0;32mI (146) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (151) heap_init: At 600FE000 len 00001FD8 (7 KiB): RTCRAM[0m
+[0;32mI (157) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator[0m
+[0;32mI (164) spi_flash: detected chip: boya[0m
+[0;32mI (166) spi_flash: flash io: qio[0m
+[0;32mI (170) sleep_gpio: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (176) sleep_gpio: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (183) main_task: Started on CPU0[0m
+[0;32mI (193) esp_psram: Reserving pool of 48K of internal memory for DMA/internal allocations[0m
+[0;32mI (193) main_task: Calling app_main()[0m
+[0;32mI (203) BackgroundTask: background_task started[0m
+[0;32mI (203) Board: UUID=f7c9d6ae-5c07-4d8c-a6c9-6ace31aa2156 SKU=bread-compact-wifi[0m
+[0;32mI (213) button: IoT Button Version: 3.5.0[0m
+[0;32mI (213) button: IoT Button Version: 3.5.0[0m
+[0;32mI (213) button: IoT Button Version: 3.5.0[0m
+[0;32mI (223) button: IoT Button Version: 3.5.0[0m
+[0;32mI (223) CompactWifiBoard: Install SSD1306 driver[0m
+[0;32mI (223) CompactWifiBoard: SSD1306 driver installed[0m
+[1;31mE (233) lcd_panel.io.i2c: panel_io_i2c_tx_buffer(193): i2c transaction failed[0m
+[1;31mE (243) lcd_panel.ssd1306: panel_ssd1306_init(151): io tx param SSD1306_CMD_SET_MULTIPLEX failed[0m
+[1;31mE (243) CompactWifiBoard: Failed to initialize display[0m
+[0;32mI (253) Display: Power management not supported[0m
+[0;32mI (253) Application: STATE: starting[0m
+[0;32mI (263) NoAudioCodec: Simplex channels created[0m
+[0;32mI (263) Application: WiFi board detected, setting opus encoder complexity to 3[0m
+[0;32mI (273) AudioCodec: Set input enable to true[0m
+[0;32mI (273) AudioCodec: Set output enable to true[0m
+[0;32mI (283) AudioCodec: Audio codec started[0m
+[0;32mI (283) WifiManager: Initializing...[0m
+[0;32mI (283) pp: pp rom version: e7ae62f[0m
+[0;32mI (293) net80211: net80211 rom version: e7ae62f[0m
+[0;32mI (303) wifi:wifi driver task: 3fcce8a8, prio:23, stack:6656, core=0[0m
+[0;32mI (303) wifi:wifi firmware version: ee91c8c[0m
+[0;32mI (303) wifi:wifi certification version: v7.0[0m
+[0;32mI (303) wifi:config NVS flash: disabled[0m
+[0;32mI (313) wifi:config nano formatting: disabled[0m
+[0;32mI (313) wifi:Init data frame dynamic rx buffer num: 32[0m
+[0;32mI (323) wifi:Init dynamic rx mgmt buffer num: 5[0m
+[0;32mI (323) wifi:Init management short buffer num: 32[0m
+[0;32mI (333) wifi:Init static tx buffer num: 16[0m
+[0;32mI (333) wifi:Init tx cache buffer num: 32[0m
+[0;32mI (333) wifi:Init static tx FG buffer num: 2[0m
+[0;32mI (343) wifi:Init static rx buffer size: 1600[0m
+[0;32mI (343) wifi:Init static rx buffer num: 16[0m
+[0;32mI (353) wifi:Init dynamic rx buffer num: 32[0m
+[0;32mI (353) wifi_init: rx ba win: 16[0m
+[0;32mI (353) wifi_init: accept mbox: 6[0m
+[0;32mI (353) wifi_init: tcpip mbox: 32[0m
+[0;32mI (363) wifi_init: udp mbox: 6[0m
+[0;32mI (363) wifi_init: tcp mbox: 6[0m
+[0;32mI (363) wifi_init: tcp tx win: 5760[0m
+[0;32mI (373) wifi_init: tcp rx win: 5760[0m
+[0;32mI (373) wifi_init: tcp mss: 1440[0m
+[0;32mI (373) wifi_init: WiFi/LWIP prefer SPIRAM[0m
+[0;32mI (383) WifiManager: Initialized[0m
+[0;32mI (383) WifiManager: Starting station[0m
+[0;32mI (383) phy_init: phy_version 711,97bcf0a2,Aug 25 2025,19:04:10[0m
+[0;32mI (423) wifi:mode : sta (98:a3:16:e7:2e:ac)[0m
+[0;32mI (423) wifi:enable tsf[0m
+[0;32mI (2833) WifiStation: Found AP: BUPT-portal, BSSID: 48:b4:c3:8a:25:80, RSSI: -74, Channel: 11, Authmode: 0[0m
+[0;32mI (2833) WifiStation: Found AP: BUPT-portal, BSSID: 48:b4:c3:84:e3:00, RSSI: -78, Channel: 11, Authmode: 0[0m
+[0;32mI (2843) WifiStation: Found AP: BUPT-portal, BSSID: 48:b4:c3:85:6e:a0, RSSI: -79, Channel: 6, Authmode: 0[0m
+[0;32mI (2853) WifiStation: Found AP: BUPT-portal, BSSID: 48:b4:c3:86:22:20, RSSI: -86, Channel: 1, Authmode: 0[0m
+[0;32mI (2863) WifiStation: Found AP: BUPT-portal, BSSID: 48:b4:c3:8a:58:40, RSSI: -86, Channel: 1, Authmode: 0[0m
+[0;32mI (2873) WifiStation: Found AP: BUPT-portal, BSSID: 48:b4:c3:89:e3:00, RSSI: -86, Channel: 11, Authmode: 0[0m
+[0;32mI (2873) WifiStation: Found AP: BUPT-portal, BSSID: 48:b4:c3:8a:61:80, RSSI: -89, Channel: 6, Authmode: 0[0m
+[0;32mI (2883) WifiStation: Found AP: BUPT-portal, BSSID: 48:b4:c3:89:d9:c0, RSSI: -90, Channel: 11, Authmode: 0[0m
+[0;32mI (2893) WifiStation: Detected Portal Network: BUPT-portal, will try to login after connected[0m
+[0;32mI (2913) wifi:new:<1,0>, old:<1,0>, ap:<255,255>, sta:<1,0>, prof:1, snd_ch_cfg:0x0[0m
+[0;32mI (2913) wifi:state: init -> auth (0xb0)[0m
+[0;32mI (2923) wifi:state: auth -> assoc (0x0)[0m
+[0;32mI (2923) wifi:state: assoc -> run (0x10)[0m
+[0;32mI (2923) wifi:connected with BUPT-portal, aid = 1, channel 1, BW20, bssid = 48:b4:c3:89:d3:e0[0m
+[0;32mI (2933) wifi:security: Open Auth, phy: bgn, rssi: -84[0m
+[0;32mI (2933) wifi:pm start, type: 1[0m
+
+[0;32mI (2943) wifi:dp: 1, bi: 102400, li: 10, scale listen interval from 1024000 us to 1024000 us[0m
+[0;32mI (2943) wifi:set rx beacon pti, rx_bcn_pti: 0, bcn_timeout: 25000, mt_pti: 0, mt_time: 10000[0m
+[0;32mI (2963) wifi:<ba-add>idx:0 (ifx:0, 48:b4:c3:89:d3:e0), tid:0, ssn:1, winSize:64[0m
+[0;32mI (2993) wifi:<ba-add>idx:1 (ifx:0, 48:b4:c3:89:d3:e0), tid:7, ssn:1, winSize:64[0m
+[0;32mI (3023) wifi:AP's beacon interval = 102400 us, DTIM period = 1[0m
+[0;32mI (3973) esp_netif_handlers: sta ip: 10.122.251.185, mask: 255.255.192.0, gw: 10.122.192.1[0m
+[0;32mI (3973) WifiStation: Got IP: 10.122.251.185[0m
+[0;32mI (3973) WifiStation: Starting Portal Login process for 2024211256[0m
+[0;32mI (3973) WifiStation: PortalLoginTask: Started[0m
+[0;32mI (4023) Ota: Current version: 1.6.0[0m
+[1;31mE (4023) Ota: Check version URL is not properly set[0m
+[0;32mI (4293) WifiStation: PortalLoginTask: Detect Step 1 status = 200[0m
+[0;32mI (4293) WifiStation: PortalLoginTask: Detect Step 1 was 200. Checking for Meta-Refresh/JS Redirect or verifying connection...[0m
+[0;33mW (4313) WifiStation: PortalLoginTask: [STRICT FAIL] Intercepted 200 OK. Analyzing body for redirect URL...[0m
+[0;32mI (4313) WifiStation: PortalLoginTask: Found Redirect URL in body: http://captive.apple.com/hotspot-detect.html?cmd=redirect&arubalp=12345[0m
+[0;32mI (4323) WifiStation: PortalLoginTask: Proceeding to login with extracted URL...[0m
+[0;32mI (4393) WifiStation: PortalLoginTask: Extracted Login URL guess: http://captive.apple.com/hotspot-detect.html?cmd=redirect&arubalp=12345[0m
+[1;31mE (4863) HTTP_CLIENT: Error, reach max_redirection_count count=10[0m
+[1;31mE (4863) HTTP_CLIENT: Error response[0m
+[0;32mI (4863) WifiStation: PortalLoginTask: Manual Body Redirect Login Status: 302[0m
+[0;32mI (5023) Ota: Current version: 1.6.0[0m
+[1;31mE (5023) Ota: Check version URL is not properly set[0m
+[0;32mI (6023) Ota: Current version: 1.6.0[0m
+[1;31mE (6023) Ota: Check version URL is not properly set[0m
+[0;32mI (7023) Ota: Current version: 1.6.0[0m
+[1;31mE (7023) Ota: Check version URL is not properly set[0m
+[0;32mI (8023) Ota: Current version: 1.6.0[0m
+[1;31mE (8023) Ota: Check version URL is not properly set[0m
+[0;32mI (9023) Ota: Current version: 1.6.0[0m
+[1;31mE (9023) Ota: Check version URL is not properly set[0m
+[0;32mI (10023) Ota: Current version: 1.6.0[0m
+[1;31mE (10023) Ota: Check version URL is not properly set[0m
+[0;32mI (10203) Application: Free internal: 105743 minimal internal: 92547[0m
+[0;32mI (11023) Ota: Current version: 1.6.0[0m
+[1;31mE (11023) Ota: Check version URL is not properly set[0m
+[0;32mI (12023) Ota: Current version: 1.6.0[0m
+[1;31mE (12023) Ota: Check version URL is not properly set[0m
+[0;32mI (13023) Ota: Current version: 1.6.0[0m
+[1;31mE (13023) Ota: Check version URL is not properly set[0m
+[0;32mI (14023) Ota: Running from factory partition, skipping[0m
+[0;33mW (14023) MQTT: MQTT endpoint is not specified[0m
+[0;32mI (14023) MODEL_LOADER: The storage free size is 21888 KB[0m
+[0;32mI (14023) MODEL_LOADER: The partition size is 3072 KB[0m
+[0;32mI (14023) MODEL_LOADER: Successfully load srmodels[0m
+[0;32mI (14033) AFE: AFE Version: (1MIC_V251128)[0m
+[0;32mI (14033) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000[0m
+[0;32mI (14043) AFE: AFE Pipeline: [input] -> |NS(WebRTC)| -> |VAD(WebRTC)| -> [output][0m
+[0;32mI (14053) AudioProcessor: Audio communication task started, feed size: 160 fetch size: 512[0m
+[0;32mI (14063) WakeWordDetect: Model 0: wn9_nihaoxiaozhi_tts[0m
+[0;32mI (14063) AFE_CONFIG: Set WakeNet Model: wn9_nihaoxiaozhi_tts[0m
+MC Quantized wakenet9: wakenet9l_tts1h8_你好小智_3_0.631_0.635, tigger:v4, mode:0, p:0, (Dec 16 2025 14:45:55)
+[0;32mI (14103) AFE: AFE Version: (1MIC_V251128)[0m
+[0;32mI (14103) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000[0m
+[0;32mI (14113) AFE: AFE Pipeline: [input] ->  -> |VAD(WebRTC)| -> |WakeNet(wn9_nihaoxiaozhi_tts,)| -> [output][0m
+[0;32mI (14123) WakeWordDetect: Audio detection task started, feed size: 512 fetch size: 512[0m
+[0;32mI (14133) Application: STATE: idle[0m
+[0;32mI (14133) Application: Resampling audio from 16000 to 24000[0m
+[0;32mI (14143) OpusResampler: Resampler configured with input sample rate 16000 and output sample rate 24000[0m
+[0;32mI (23203) Application: Free internal: 50439 minimal internal: 50279[0m
+[0;32mI (26143) AudioCodec: Set output enable to false[0m
+[0;32mI (33203) Application: Free internal: 49359 minimal internal: 49239[0m
+[0;32mI (43203) Application: Free internal: 49379 minimal internal: 49123[0m
+[0;32mI (53203) Application: Free internal: 49403 minimal internal: 49123[0m
+[0;32mI (63203) Application: Free internal: 49415 minimal internal: 49123[0m
+[0;32mI (73203) Application: Free internal: 49371 minimal internal: 49123[0m
+[0;32mI (83203) Application: Free internal: 49367 minimal internal: 49123[0m
+[0;32mI (93203) Application: Free internal: 49427 minimal internal: 49123[0m
+[0;32mI (103203) Application: Free internal: 50411 minimal internal: 49123[0m
+[0;32mI (113203) Application: Free internal: 50451 minimal internal: 49123[0m
+[0;32mI (123203) Application: Free internal: 50471 minimal internal: 49123[0m
+[0;32mI (133203) Application: Free internal: 50475 minimal internal: 49123[0m
+[0;32mI (143203) Application: Free internal: 50471 minimal internal: 49123[0m
+[0;32mI (153203) Application: Free internal: 50483 minimal internal: 49123[0m
+[0;32mI (163203) Application: Free internal: 50471 minimal internal: 49123[0m
+[0;32mI (173203) Application: Free internal: 49407 minimal internal: 49123[0m
+[0;32mI (183203) Application: Free internal: 49455 minimal internal: 49123[0m
+[0;32mI (193203) Application: Free internal: 49407 minimal internal: 49123[0m
+[0;32mI (203203) Application: Free internal: 49419 minimal internal: 49123[0m
+[0;32mI (213203) Application: Free internal: 49455 minimal internal: 49123[0m
+[0;32mI (223203) Application: Free internal: 49423 minimal internal: 49123[0m
+[0;32mI (233203) Application: Free internal: 49443 minimal internal: 49123[0m
+[0;32mI (243203) Application: Free internal: 49407 minimal internal: 49123[0m
+[0;32mI (253203) Application: Free internal: 49455 minimal internal: 49123[0m
+[0;32mI (263203) Application: Free internal: 49407 minimal internal: 49123[0m
+[0;32mI (273203) Application: Free internal: 49455 minimal internal: 49123[0m
+[0;32mI (283203) Application: Free internal: 49407 minimal internal: 49123[0m
+[0;32mI (293203) Application: Free internal: 49443 minimal internal: 49123[0m
+[0;32mI (303203) Application: Free internal: 49407 minimal internal: 49123[0m
+[0;32mI (313203) Application: Free internal: 49407 minimal internal: 49123[0m
+[0;32mI (323203) Application: Free internal: 49407 minimal internal: 49123[0m
+[0;32mI (333203) Application: Free internal: 49399 minimal internal: 49123[0m
+[0;32mI (343203) Application: Free internal: 49431 minimal internal: 49123[0m
+[0;32mI (353203) Application: Free internal: 50439 minimal internal: 49123[0m
+[0;32mI (363203) Application: Free internal: 50475 minimal internal: 49123[0m
+[0;32mI (373203) Application: Free internal: 50475 minimal internal: 49123[0m
